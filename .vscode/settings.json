@@ -1,3 +1,7 @@
 {
-    "files.autoSave": "afterDelay"
+    "files.autoSave": "afterDelay",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "http-sonarqube-climateconfort-duckdns-org",
+        "projectKey": "data_collector"
+    }
 }
