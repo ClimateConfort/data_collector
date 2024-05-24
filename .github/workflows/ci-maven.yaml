@@ -17,6 +17,12 @@ jobs:
   test-and-report:
     runs-on: ubuntu-latest
     steps:
+    - name: Download dependency
+      uses: actions/checkout@v4
+      with:
+        repository: ClimateConfort/common
+        ref: feature-sensor-data
+        path: common
     - name: Checkout to runner
       uses: actions/checkout@v4
       with:
@@ -27,6 +33,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Install dependency
+      run: |
+        cd common
+        mvn install
     - name: Cache SonarQube packages
       uses: actions/cache@v4
       with:
