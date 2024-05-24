@@ -1,12 +1,8 @@
 package com.climateconfort.data_collector;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Optional;
 
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
@@ -15,10 +11,10 @@ public class CsvDataReader implements DataReader {
     private final Iterator<CSVRecord> recordIterator;
 
     // CSVFormat.DEFAULT.builder()
-    //             .setHeader()
-    //             .setSkipHeaderRecord(true)
-    //             .build()
-    //             .parse(Files.newBufferedReader(datasetPath)
+    // .setHeader()
+    // .setSkipHeaderRecord(true)
+    // .build()
+    // .parse(Files.newBufferedReader(datasetPath)
     public CsvDataReader(CSVParser parser) {
         this.recordIterator = parser.iterator();
     }
@@ -38,5 +34,4 @@ public class CsvDataReader implements DataReader {
         float pressure = Float.parseFloat(csvRecord.get("Pressure"));
         return Optional.of(new SensorData(unixTime, temperature, lightLvl, airQuality, soundLvl, humidity, pressure));
     }
-
 }
