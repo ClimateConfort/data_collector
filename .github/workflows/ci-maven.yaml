@@ -34,9 +34,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Install dependency
-      run: | 
-        pwd
-        ls -la $GITHUB_WORKSPACE
+      run: mvn -f common/pom.xml clean install
     - name: Cache SonarQube packages
       uses: actions/cache@v4
       with:
