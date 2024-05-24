@@ -34,7 +34,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Install dependency
-      run: ls common/
+      run: ls -la
     - name: Cache SonarQube packages
       uses: actions/cache@v4
       with:
