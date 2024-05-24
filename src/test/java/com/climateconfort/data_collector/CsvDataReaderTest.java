@@ -16,7 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.climateconfort.common.SensorData;
+
 class CsvDataReaderTest {
+
+    private static final long BUILDING_ID = 1L;
+    private static final long ROOM_ID = 1L;
 
     @Mock
     private CSVParser csvParser;
@@ -33,14 +38,13 @@ class CsvDataReaderTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         when(csvParser.iterator()).thenReturn(recordIterator);
-        csvDataReader = new CsvDataReader(csvParser);
+        csvDataReader = new CsvDataReader(BUILDING_ID, ROOM_ID, csvParser);
     }
 
     @Test
     void readDataTest() throws IOException {
         when(recordIterator.hasNext()).thenReturn(true).thenReturn(false);
         when(recordIterator.next()).thenReturn(csvRecord);
-
         when(csvRecord.get("Time")).thenReturn("1627884000");
         when(csvRecord.get("Temperature")).thenReturn("22.5");
         when(csvRecord.get("LightLvl")).thenReturn("300");
@@ -50,7 +54,6 @@ class CsvDataReaderTest {
         when(csvRecord.get("Pressure")).thenReturn("1012");
 
         Optional<SensorData> result = csvDataReader.read();
-
         assertTrue(result.isPresent());
         SensorData sensorData = result.get();
         assertEquals(1627884000L, sensorData.getUnixTime());
@@ -65,9 +68,7 @@ class CsvDataReaderTest {
     @Test
     void readNoDataTest() throws IOException {
         when(recordIterator.hasNext()).thenReturn(false);
-
         Optional<SensorData> result = csvDataReader.read();
-
         assertFalse(result.isPresent());
     }
 }

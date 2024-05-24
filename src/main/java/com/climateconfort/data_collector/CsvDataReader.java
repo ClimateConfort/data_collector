@@ -6,8 +6,12 @@ import java.util.Optional;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import com.climateconfort.common.SensorData;
+
 public class CsvDataReader implements DataReader {
 
+    private final long buildingId;
+    private final long roomId;
     private final Iterator<CSVRecord> recordIterator;
 
     // CSVFormat.DEFAULT.builder()
@@ -15,7 +19,9 @@ public class CsvDataReader implements DataReader {
     // .setSkipHeaderRecord(true)
     // .build()
     // .parse(Files.newBufferedReader(datasetPath)
-    public CsvDataReader(CSVParser parser) {
+    public CsvDataReader(long buildingId, long roomId, CSVParser parser) {
+        this.buildingId = buildingId;
+        this.roomId = roomId;
         this.recordIterator = parser.iterator();
     }
 
@@ -32,6 +38,7 @@ public class CsvDataReader implements DataReader {
         float soundLvl = Float.parseFloat(csvRecord.get("SoundLvl"));
         float humidity = Float.parseFloat(csvRecord.get("Humidity"));
         float pressure = Float.parseFloat(csvRecord.get("Pressure"));
-        return Optional.of(new SensorData(unixTime, temperature, lightLvl, airQuality, soundLvl, humidity, pressure));
+        return Optional.of(new SensorData(unixTime, buildingId, roomId, temperature, lightLvl, airQuality, soundLvl,
+                humidity, pressure));
     }
 }
