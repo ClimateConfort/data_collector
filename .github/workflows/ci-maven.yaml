@@ -35,7 +35,7 @@ jobs:
         cache: maven
     - name: Install dependency
       run: |
-        cd common
+        cd $GITHUB_WORKSPACE/common
         mvn install
     - name: Cache SonarQube packages
       uses: actions/cache@v4
