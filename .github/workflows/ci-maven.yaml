@@ -35,9 +35,6 @@ jobs:
         cache: maven
     - name: Install dependency
       run: mvn -f common/pom.xml clean install
-    - name: Debug
-      run: |
-        tree
     - name: Cache SonarQube packages
       uses: actions/cache@v4
       with:
