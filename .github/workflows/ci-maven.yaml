@@ -21,12 +21,20 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Download dependency
+      uses: actions/checkout@v4
+      with:
+        repository: ClimateConfort/common
+        ref: feature-sensor-data
+        path: common
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Install dependency
+      run: mvn -f common/pom.xml clean install
     - name: Cache SonarQube packages
       uses: actions/cache@v4
       with:
