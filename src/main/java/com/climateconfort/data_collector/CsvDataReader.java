@@ -7,19 +7,20 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 public class CsvDataReader implements DataReader {
 
-    Iterator<CSVRecord> recordIterator;
+    private final Iterator<CSVRecord> recordIterator;
 
-    public CsvDataReader(Path datasetPath) throws IOException {
-        this.recordIterator = CSVFormat.DEFAULT.builder()
-                .setHeader()
-                .setSkipHeaderRecord(true)
-                .build()
-                .parse(Files.newBufferedReader(datasetPath))
-                .iterator();
+    // CSVFormat.DEFAULT.builder()
+    //             .setHeader()
+    //             .setSkipHeaderRecord(true)
+    //             .build()
+    //             .parse(Files.newBufferedReader(datasetPath)
+    public CsvDataReader(CSVParser parser) {
+        this.recordIterator = parser.iterator();
     }
 
     @Override
