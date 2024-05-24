@@ -1,4 +1,4 @@
-package com.climateconfort.data_collector;
+package com.climateconfort;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.climateconfort.common.SensorData;
+import com.climateconfort.data_collector.CsvDataReader;
 
 class CsvDataReaderTest {
 
