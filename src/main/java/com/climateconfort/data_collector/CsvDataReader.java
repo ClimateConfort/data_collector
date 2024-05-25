@@ -26,7 +26,7 @@ public class CsvDataReader implements DataReader {
     }
 
     @Override
-    public Optional<SensorData> read() {
+    public Optional<SensorData> read() throws NumberFormatException {
         if (!recordIterator.hasNext()) {
             return Optional.empty();
         }
@@ -38,7 +38,7 @@ public class CsvDataReader implements DataReader {
         float soundLvl = Float.parseFloat(csvRecord.get("SoundLvl"));
         float humidity = Float.parseFloat(csvRecord.get("Humidity"));
         float pressure = Float.parseFloat(csvRecord.get("Pressure"));
-        return Optional.of(new SensorData(unixTime, buildingId, roomId, temperature, lightLvl, airQuality, soundLvl,
+        return Optional.of(new SensorData(unixTime, buildingId, roomId, -1, temperature, lightLvl, airQuality, soundLvl,
                 humidity, pressure));
     }
 }
