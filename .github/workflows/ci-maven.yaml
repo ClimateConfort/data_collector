@@ -25,7 +25,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: ClimateConfort/common
-        ref: feature-sensor-data
+        ref: feature-common-names
         path: common
     - name: Set up JDK 17
       uses: actions/setup-java@v4
