@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
+import com.climateconfort.common.Constants;
 import com.climateconfort.common.SensorData;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -13,8 +14,6 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public class DataPublisher {
     
-    private static final String EXCHANGE_NAME = "sensor-data";
-
     private final long roomId;
     private final long buildingId;
     private final ConnectionFactory connectionFactory;
@@ -32,8 +31,8 @@ public class DataPublisher {
     public void publish(SensorData sensorData) throws IOException, TimeoutException {
         try (Connection connection = connectionFactory.newConnection()) {
             Channel channel = connection.createChannel();
-            channel.exchangeDeclare(EXCHANGE_NAME, "direct");
-            channel.basicPublish(EXCHANGE_NAME, String.format(buildingId + "-" + roomId), null, prepareToSend(sensorData));
+            channel.exchangeDeclare(Constants.SENSOR_EXCHANGE_NAME, "direct");
+            channel.basicPublish(Constants.SENSOR_EXCHANGE_NAME, String.format(buildingId + "-" + roomId), null, prepareToSend(sensorData));
         }
     }
 
