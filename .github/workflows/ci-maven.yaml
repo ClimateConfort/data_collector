@@ -33,6 +33,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Debug
+      run: tree .
     - name: Install dependency
       run: mvn -f common/pom.xml clean install
     - name: Cache SonarQube packages
