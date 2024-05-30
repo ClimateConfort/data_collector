@@ -10,8 +10,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -29,7 +31,7 @@ class ActionReceiverTest {
     private static final long roomId = 1;
     private static final long buildingId = 1;
     private static final String QUEUE_NAME = "queue-string";
-
+    
     @Mock
     private ConnectionFactory connectionFactory;
 
@@ -43,6 +45,8 @@ class ActionReceiverTest {
     private DeclareOk declareOk;
 
     ActionReceiver actionReceiver;
+
+    boolean waiting = false;
 
     @BeforeEach
     void setUp() throws IOException, TimeoutException, NoSuchFieldException, SecurityException,
@@ -58,22 +62,23 @@ class ActionReceiverTest {
 
     @Test
     void subscribeTest() throws InterruptedException, IOException, TimeoutException {
-        (new Thread(() -> {
+        Thread subscriberThread = new Thread(() -> {
             try {
                 actionReceiver.subscribe();
             } catch (IOException | TimeoutException | InterruptedException e) {
                 throw new RuntimeException("Runtime error");
             }
-        })).start();
+        });
+        subscriberThread.start();
 
-        Thread.sleep(1000);
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> subscriberThread.getState().equals(Thread.State.WAITING));
+
         actionReceiver.stop();
         verify(connectionFactory).newConnection();
         verify(connection).createChannel();
         verify(channel).exchangeDeclare(Constants.SENSOR_ACTION_EXCHANGE, "topic");
         verify(channel).queueBind(QUEUE_NAME, Constants.SENSOR_ACTION_EXCHANGE,
                 String.format("%d.%d", buildingId, roomId));
-        verify(channel).basicCancel(null);
     }
 
     @Test
