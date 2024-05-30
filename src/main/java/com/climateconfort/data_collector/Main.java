@@ -22,7 +22,7 @@ public class Main {
         CsvDataReader dataReader = new CsvDataReader(1, 1, parser);
         Properties properties = new Properties();
         properties.load(new FileInputStream("src/main/resources/application.properties"));
-        ActionReceiver actionReceiver = new ActionReceiver(1, 1, properties);
+        ActionReceiver actionReceiver = new ActionReceiver(properties);
 
         (new Thread(() -> {
             try {

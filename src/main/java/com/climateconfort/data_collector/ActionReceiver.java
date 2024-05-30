@@ -18,7 +18,7 @@ public class ActionReceiver {
     private final ConnectionFactory connectionFactory;
     private boolean isStop;
 
-    public ActionReceiver(long roomId, long buildingId, Properties properties) {
+    public ActionReceiver(Properties properties) {
         this.roomId = Integer.parseInt(properties.getProperty("room_id", "NaN"));
         this.buildingId = Integer.parseInt(properties.getProperty("building_id", "NaN"));
         this.connectionFactory = new ConnectionFactory();
@@ -34,7 +34,7 @@ public class ActionReceiver {
                 Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(Constants.SENSOR_ACTION_EXCHANGE, "topic");
             String queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, Constants.SENSOR_ACTION_EXCHANGE, String.format(buildingId + "." + roomId));
+            channel.queueBind(queueName, Constants.SENSOR_ACTION_EXCHANGE, String.format("%l.%l", buildingId, roomId));
             ActionConsumer consumer = new ActionConsumer(channel);
             String tag = channel.basicConsume(queueName, true, consumer);
             synchronized (this) {

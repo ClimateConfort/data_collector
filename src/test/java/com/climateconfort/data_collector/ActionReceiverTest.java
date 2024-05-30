@@ -25,7 +25,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Envelope;
 
-public class ActionReceiverTest {
+class ActionReceiverTest {
     private static final long roomId = 1;
     private static final long buildingId = 1;
     private static final String QUEUE_NAME = "queue-string";
@@ -52,7 +52,7 @@ public class ActionReceiverTest {
         when(connection.createChannel()).thenReturn(channel);
         when(channel.queueDeclare()).thenReturn(declareOk);
         when(declareOk.getQueue()).thenReturn("queue-string");
-        actionReceiver = new ActionReceiver(roomId, buildingId, getProperties());
+        actionReceiver = new ActionReceiver(getProperties());
         setField(actionReceiver, "connectionFactory", connectionFactory);
     }
 
