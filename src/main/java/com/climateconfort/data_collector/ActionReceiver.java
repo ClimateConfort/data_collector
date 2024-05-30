@@ -34,7 +34,7 @@ public class ActionReceiver {
                 Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(Constants.SENSOR_ACTION_EXCHANGE, "topic");
             String queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, Constants.SENSOR_ACTION_EXCHANGE, String.format("%l.%l", buildingId, roomId));
+            channel.queueBind(queueName, Constants.SENSOR_ACTION_EXCHANGE, String.format("%d.%d", buildingId, roomId));
             ActionConsumer consumer = new ActionConsumer(channel);
             String tag = channel.basicConsume(queueName, true, consumer);
             synchronized (this) {
