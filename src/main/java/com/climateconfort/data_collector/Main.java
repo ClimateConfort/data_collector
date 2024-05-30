@@ -11,7 +11,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
+
         CSVParser parser = CSVFormat.DEFAULT
                 .builder()
                 .setHeader()
@@ -21,6 +22,19 @@ public class Main {
         CsvDataReader dataReader = new CsvDataReader(1, 1, parser);
         Properties properties = new Properties();
         properties.load(new FileInputStream("src/main/resources/application.properties"));
+        ActionReceiver actionReceiver = new ActionReceiver(1, 1, properties);
+
+        (new Thread(() -> {
+            try {
+                actionReceiver.subscribe();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        })).start();
         DataPublisher dataPublisher = new DataPublisher(properties);
         while (true) {
             dataReader.read().ifPresentOrElse(sensorData -> {
