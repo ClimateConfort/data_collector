@@ -10,8 +10,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -44,6 +46,8 @@ class ActionReceiverTest {
 
     ActionReceiver actionReceiver;
 
+    boolean waiting = false;
+
     @BeforeEach
     void setUp() throws IOException, TimeoutException, NoSuchFieldException, SecurityException,
             IllegalArgumentException, IllegalAccessException {
@@ -58,15 +62,17 @@ class ActionReceiverTest {
 
     @Test
     void subscribeTest() throws InterruptedException, IOException, TimeoutException {
-        (new Thread(() -> {
+        Thread subscriberThread = new Thread(() -> {
             try {
                 actionReceiver.subscribe();
             } catch (IOException | TimeoutException | InterruptedException e) {
                 throw new RuntimeException("Runtime error");
             }
-        })).start();
+        });
+        subscriberThread.start();
 
-        Thread.sleep(1000);
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> subscriberThread.getState().equals(Thread.State.WAITING));
+
         actionReceiver.stop();
         verify(connectionFactory).newConnection();
         verify(connection).createChannel();
