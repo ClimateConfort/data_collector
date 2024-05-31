@@ -32,7 +32,7 @@ public class DataPublisher {
         try (Connection connection = connectionFactory.newConnection()) {
             Channel channel = connection.createChannel();
             channel.exchangeDeclare(Constants.SENSOR_EXCHANGE_NAME, "direct");
-            channel.basicPublish(Constants.SENSOR_EXCHANGE_NAME, String.format(buildingId + "-" + roomId), null, prepareToSend(sensorData));
+            channel.basicPublish(Constants.SENSOR_EXCHANGE_NAME, String.format("%d-%d", buildingId, roomId), null, prepareToSend(sensorData));
         }
     }
 

@@ -27,7 +27,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-public class DataPublisherTest {
+class DataPublisherTest {
 
     private static final int roomId = 1;
     private static final int buildingId = 1;
@@ -48,7 +48,7 @@ public class DataPublisherTest {
     private SensorData sensorData;
 
     @BeforeEach
-    public void setUp() throws IOException, TimeoutException, NoSuchFieldException, SecurityException,
+    void setUp() throws IOException, TimeoutException, NoSuchFieldException, SecurityException,
             IllegalArgumentException, IllegalAccessException {
         MockitoAnnotations.openMocks(this);
         when(connectionFactory.newConnection()).thenReturn(connection);
@@ -73,12 +73,12 @@ public class DataPublisherTest {
     }
 
     @Test
-    public void testPublish() throws IOException, TimeoutException, ClassNotFoundException {
+    void testPublish() throws IOException, TimeoutException, ClassNotFoundException {
         dataPublisher.publish(sensorData);
 
         verify(connectionFactory).newConnection();
         verify(connection).createChannel();
-        verify(channel).exchangeDeclare(eq(Constants.SENSOR_EXCHANGE_NAME), eq("direct"));
+        verify(channel).exchangeDeclare(Constants.SENSOR_EXCHANGE_NAME, "direct");
         verify(channel).basicPublish(eq(Constants.SENSOR_EXCHANGE_NAME), eq(String.format(buildingId + "-" + roomId)),
                 isNull(),
                 byteArrayCaptor.capture());

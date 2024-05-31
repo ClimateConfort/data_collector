@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,15 +86,11 @@ class MainTest {
     }
 
     @Test
-    public void testSetupIncorrect() throws Exception {
+    void testSetupIncorrect() throws Exception {
         Scanner scanner = mock(Scanner.class);
         doThrow(new IOException()).when(actionReceiver).subscribe();
         doNothing().when(actionReceiver).stop();
-        doAnswer(invocation -> {
-            Thread.sleep(1000);
-            return null;
-        }).when(scanner).nextLine();
-        main.setup(scanner);
+        assertDoesNotThrow(() -> main.setup(scanner));
     }
 
     @Test

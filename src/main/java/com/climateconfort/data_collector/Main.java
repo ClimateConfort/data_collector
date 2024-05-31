@@ -47,7 +47,7 @@ public class Main {
             try {
                 actionReceiver.subscribe();
             } catch (IOException | TimeoutException | InterruptedException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         });
         Thread waitThread = new Thread(() -> {
@@ -67,7 +67,7 @@ public class Main {
                         try {
                             dataPublisher.publish(sensorData);
                         } catch (IOException | TimeoutException e) {
-                            throw new RuntimeException(e);
+                            throw new IllegalStateException(e);
                         }
                     }, () -> System.out.println("No data..."));
         }
@@ -128,7 +128,6 @@ public class Main {
             System.out.println("Error parsing command-line arguments: " + e.getMessage());
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(PROGRAM_NAME, generateArgumentOptions());
-            return;
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             System.exit(1);

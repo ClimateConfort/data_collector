@@ -84,7 +84,7 @@
                         <id>coverage-initialize</id>
                         <goals>
                             <goal>prepare-agent</goal>
-                        </goals>    
+                        </goals>
                     </execution>
                     <execution>
                         <id>jacoco-report</id>
@@ -97,5 +97,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
