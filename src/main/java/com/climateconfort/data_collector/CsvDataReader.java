@@ -2,6 +2,7 @@ package com.climateconfort.data_collector;
 
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -19,9 +20,9 @@ public class CsvDataReader implements DataReader {
     // .setSkipHeaderRecord(true)
     // .build()
     // .parse(Files.newBufferedReader(datasetPath)
-    public CsvDataReader(long buildingId, long roomId, CSVParser parser) {
-        this.buildingId = buildingId;
-        this.roomId = roomId;
+    public CsvDataReader(Properties properties, CSVParser parser) {
+        this.roomId = Integer.parseInt(properties.getProperty("room_id", "NaN"));
+        this.buildingId = Integer.parseInt(properties.getProperty("building_id", "NaN"));
         this.recordIterator = parser.iterator();
     }
 

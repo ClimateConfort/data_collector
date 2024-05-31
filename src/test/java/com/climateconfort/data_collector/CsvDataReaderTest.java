@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -38,7 +39,7 @@ class CsvDataReaderTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         when(csvParser.iterator()).thenReturn(recordIterator);
-        csvDataReader = new CsvDataReader(BUILDING_ID, ROOM_ID, csvParser);
+        csvDataReader = new CsvDataReader(getProperties(), csvParser);
     }
 
     @Test
@@ -70,5 +71,12 @@ class CsvDataReaderTest {
         when(recordIterator.hasNext()).thenReturn(false);
         Optional<SensorData> result = csvDataReader.read();
         assertFalse(result.isPresent());
+    }
+
+    private Properties getProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("room_id", String.valueOf(ROOM_ID));
+        properties.setProperty("building_id", String.valueOf(BUILDING_ID));
+        return properties;
     }
 }
