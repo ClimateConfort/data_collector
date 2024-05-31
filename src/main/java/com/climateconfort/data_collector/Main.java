@@ -1,5 +1,6 @@
 package com.climateconfort.data_collector;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,7 +30,9 @@ public class Main {
 
     public Main(Path datasetPath, Path propertiesPath) throws IOException {
         Properties properties = new Properties();
-        properties.load(Files.newBufferedReader(propertiesPath));
+        try (BufferedReader bufferedReader = Files.newBufferedReader(propertiesPath)) {
+            properties.load(bufferedReader);
+        }
         CSVParser parser = CSVFormat.DEFAULT
                 .builder()
                 .setHeader()
@@ -47,6 +50,7 @@ public class Main {
             try {
                 actionReceiver.subscribe();
             } catch (IOException | TimeoutException | InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new IllegalStateException(e);
             }
         });

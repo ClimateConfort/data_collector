@@ -13,7 +13,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class DataPublisher {
-    
+
     private final long roomId;
     private final long buildingId;
     private final ConnectionFactory connectionFactory;
@@ -29,10 +29,11 @@ public class DataPublisher {
     }
 
     public void publish(SensorData sensorData) throws IOException, TimeoutException {
-        try (Connection connection = connectionFactory.newConnection()) {
-            Channel channel = connection.createChannel();
+        try (Connection connection = connectionFactory.newConnection();
+                Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(Constants.SENSOR_EXCHANGE_NAME, "direct");
-            channel.basicPublish(Constants.SENSOR_EXCHANGE_NAME, String.format("%d-%d", buildingId, roomId), null, prepareToSend(sensorData));
+            channel.basicPublish(Constants.SENSOR_EXCHANGE_NAME, String.format("%d-%d", buildingId, roomId), null,
+                    prepareToSend(sensorData));
         }
     }
 
