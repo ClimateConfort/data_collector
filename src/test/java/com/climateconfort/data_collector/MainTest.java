@@ -61,8 +61,8 @@ class MainTest {
         // Create temporary dataset CSV file
         datasetPath = tempDir.resolve("dataset.csv");
         try (BufferedWriter writer = Files.newBufferedWriter(datasetPath)) {
-            writer.write("header1,header2\n");
-            writer.write("value1,value2\n");
+            writer.write("Time,Temperature,LightLvl,AirQuality,SoundLvl,Humidity,Pressure\n");
+            writer.write("100,448,203.16,311.05,686.11,798.65,575.02\n");
         }
 
         main = new Main(datasetPath, propertiesPath);
@@ -132,6 +132,14 @@ class MainTest {
         assertTrue(cmd.hasOption("p"));
         assertEquals(datasetPath.toString(), cmd.getOptionValue("d"));
         assertEquals(propertiesPath.toString(), cmd.getOptionValue("p"));
+    }
+
+    @Test
+    void testMain() {
+        String[] args1 = { "-h" };
+        String[] args2 = { "-v" };
+        assertDoesNotThrow(() -> Main.main(args1));
+        assertDoesNotThrow(() -> Main.main(args2));
     }
 
     private <T, E> void setField(T target, String fieldName, E newValue)
