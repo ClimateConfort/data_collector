@@ -10,7 +10,7 @@
             "request": "launch",
             "mainClass": "com.climateconfort.data_collector.Main",
             "projectName": "data_collector",
-            "args": ["-p", "config/conf.properties", "-d", "proba.csv"]
+            "args": ["-p", "config/conf.properties", "-d", "climate_data.csv"]
         }
     ]
 }
