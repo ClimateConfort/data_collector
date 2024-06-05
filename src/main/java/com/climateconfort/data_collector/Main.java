@@ -57,7 +57,8 @@ public class Main {
         Thread waitThread = new Thread(() -> {
             scanner.nextLine();
             actionReceiver.stop();
-            isStop = false;
+            isStop = true;
+            scanner.close();
         });
         subscriberThread.start();
         waitThread.start();
