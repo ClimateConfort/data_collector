@@ -50,8 +50,8 @@ public class Main {
             try {
                 actionReceiver.subscribe();
             } catch (IOException | TimeoutException | InterruptedException e) {
+                log("Subscriber Thread Interrupted -> " + e.getMessage());
                 Thread.currentThread().interrupt();
-                throw new IllegalStateException(e);
             }
         });
         Thread waitThread = new Thread(() -> {
@@ -74,7 +74,7 @@ public class Main {
                         } catch (IOException | TimeoutException e) {
                             throw new IllegalStateException(e);
                         }
-                    }, () -> System.out.println("No data..."));
+                    }, () -> log("No data..."));
         }
     }
 
@@ -93,6 +93,10 @@ public class Main {
         return parser.parse(argOptions, args);
     }
 
+    private static void log(String info) {
+        System.out.println(PROGRAM_NAME + ": " + info);
+    }
+
     public static void main(String[] args) {
 
         String propertiesPath = "";
@@ -109,7 +113,7 @@ public class Main {
             }
 
             if (cmd.hasOption("v")) {
-                System.out.println("Version: " + PROGRAM_VERSION);
+                log(PROGRAM_VERSION);
                 return;
             }
 
@@ -122,7 +126,7 @@ public class Main {
             }
 
             if (!cmd.hasOption("d") && !cmd.hasOption("p")) {
-                System.out.println("No valid options provided. Use -h for help.");
+                log("No valid options provided. Use -h for help.");
                 return;
             }
 
@@ -130,11 +134,11 @@ public class Main {
             main.setup(new Scanner(System.in));
             main.start();
         } catch (ParseException e) {
-            System.out.println("Error parsing command-line arguments: " + e.getMessage());
+            log("Error parsing command-line arguments -> " + e.getMessage());
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(PROGRAM_NAME, generateArgumentOptions());
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            log("Error -> " + e.getMessage());
             System.exit(1);
         }
     }
