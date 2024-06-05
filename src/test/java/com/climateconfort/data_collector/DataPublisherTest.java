@@ -67,8 +67,8 @@ class DataPublisherTest {
 
     private Properties getProperties() {
         Properties properties = new Properties();
-        properties.setProperty("room_id", String.valueOf(roomId));
-        properties.setProperty("building_id", String.valueOf(buildingId));
+        properties.setProperty("climateconfort.room_id", String.valueOf(roomId));
+        properties.setProperty("climateconfort.building_id", String.valueOf(buildingId));
         return properties;
     }
 

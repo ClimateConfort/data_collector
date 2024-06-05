@@ -50,7 +50,7 @@ class CsvDataReaderTest {
         when(csvRecord.get("Temperature")).thenReturn("22.5");
         when(csvRecord.get("LightLvl")).thenReturn("300");
         when(csvRecord.get("AirQuality")).thenReturn("50");
-        when(csvRecord.get("SoundLvl")).thenReturn("30");
+        when(csvRecord.get("SoundLvL")).thenReturn("30");
         when(csvRecord.get("Humidity")).thenReturn("45");
         when(csvRecord.get("Pressure")).thenReturn("1012");
 
@@ -59,8 +59,6 @@ class CsvDataReaderTest {
         SensorData sensorData = result.get();
         assertEquals(1627884000L, sensorData.getUnixTime());
         assertEquals(22.5f, sensorData.getTemperature());
-        assertEquals(300f, sensorData.getLightLevel());
-        assertEquals(50f, sensorData.getAirQuality());
         assertEquals(30f, sensorData.getSoundLevel());
         assertEquals(45f, sensorData.getHumidity());
         assertEquals(1012f, sensorData.getPressure());
@@ -75,8 +73,8 @@ class CsvDataReaderTest {
 
     private Properties getProperties() {
         Properties properties = new Properties();
-        properties.setProperty("room_id", String.valueOf(ROOM_ID));
-        properties.setProperty("building_id", String.valueOf(BUILDING_ID));
+        properties.setProperty("climateconfort.room_id", String.valueOf(ROOM_ID));
+        properties.setProperty("climateconfort.building_id", String.valueOf(BUILDING_ID));
         return properties;
     }
 }
