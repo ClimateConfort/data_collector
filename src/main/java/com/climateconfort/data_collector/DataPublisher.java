@@ -20,12 +20,12 @@ public class DataPublisher {
 
     public DataPublisher(Properties properties) throws NumberFormatException {
         this.connectionFactory = new ConnectionFactory();
-        this.connectionFactory.setHost(properties.getProperty("rabbitmq_server_ip", "localhost"));
-        this.connectionFactory.setPort(Integer.parseInt(properties.getProperty("rabbitmq_server_port", "5672")));
-        this.connectionFactory.setUsername(properties.getProperty("rabbitmq_server_user", "guest"));
-        this.connectionFactory.setPassword(properties.getProperty("rabbitmq_server_password", "guest"));
-        this.roomId = Integer.parseInt(properties.getProperty("room_id", "NaN"));
-        this.buildingId = Integer.parseInt(properties.getProperty("building_id", "NaN"));
+        this.connectionFactory.setHost(properties.getProperty("rabbitmq.server.ip", "localhost"));
+        this.connectionFactory.setPort(Integer.parseInt(properties.getProperty("rabbitmq.server.port", "5672")));
+        this.connectionFactory.setUsername(properties.getProperty("rabbitmq.server.user", "guest"));
+        this.connectionFactory.setPassword(properties.getProperty("rabbitmq.server.password", "guest"));
+        this.roomId = Integer.parseInt(properties.getProperty("climateconfort.room_id", "NaN"));
+        this.buildingId = Integer.parseInt(properties.getProperty("climateconfort.building_id", "NaN"));
     }
 
     public void publish(SensorData sensorData) throws IOException, TimeoutException {

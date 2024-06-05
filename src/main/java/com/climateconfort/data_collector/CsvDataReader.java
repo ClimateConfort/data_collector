@@ -15,14 +15,9 @@ public class CsvDataReader implements DataReader {
     private final long roomId;
     private final Iterator<CSVRecord> recordIterator;
 
-    // CSVFormat.DEFAULT.builder()
-    // .setHeader()
-    // .setSkipHeaderRecord(true)
-    // .build()
-    // .parse(Files.newBufferedReader(datasetPath)
     public CsvDataReader(Properties properties, CSVParser parser) {
-        this.roomId = Integer.parseInt(properties.getProperty("room_id", "NaN"));
-        this.buildingId = Integer.parseInt(properties.getProperty("building_id", "NaN"));
+        this.roomId = Integer.parseInt(properties.getProperty("climateconfort.room_id", "NaN"));
+        this.buildingId = Integer.parseInt(properties.getProperty("climateconfort.building_id", "NaN"));
         this.recordIterator = parser.iterator();
     }
 
@@ -34,9 +29,9 @@ public class CsvDataReader implements DataReader {
         CSVRecord csvRecord = recordIterator.next();
         long unixTime = Long.parseLong(csvRecord.get("Time"));
         float temperature = Float.parseFloat(csvRecord.get("Temperature"));
-        float lightLvl = Float.parseFloat(csvRecord.get("LightLvl"));
-        float airQuality = Float.parseFloat(csvRecord.get("AirQuality"));
-        float soundLvl = Float.parseFloat(csvRecord.get("SoundLvl"));
+        float lightLvl = 0;// Float.parseFloat(csvRecord.get("LightLvl"));
+        float airQuality = 0;// Float.parseFloat(csvRecord.get("AirQuality"));
+        float soundLvl = Float.parseFloat(csvRecord.get("SoundLvL"));
         float humidity = Float.parseFloat(csvRecord.get("Humidity"));
         float pressure = Float.parseFloat(csvRecord.get("Pressure"));
         return Optional.of(new SensorData(unixTime, buildingId, roomId, -1, temperature, lightLvl, airQuality, soundLvl,
