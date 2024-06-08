@@ -95,7 +95,7 @@ class MainTest {
     }
 
     @Test
-    void testStart() throws IOException, TimeoutException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InterruptedException, BrokenBarrierException {
+    void testStart() throws IOException, TimeoutException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InterruptedException {
         SensorData sensorData = new SensorData(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
         when(csvDataReader.read()).thenReturn(Optional.of(sensorData));
         doAnswer(invocation -> {
@@ -151,7 +151,7 @@ class MainTest {
     }
 
     private <T> Field setFieldPublic(Class<T> target, String fieldName)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException {
         Field field = target.getDeclaredField(fieldName);
         field.setAccessible(true);
         return field;

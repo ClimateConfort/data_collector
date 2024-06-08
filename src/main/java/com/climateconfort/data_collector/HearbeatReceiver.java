@@ -2,11 +2,8 @@ package com.climateconfort.data_collector;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.climateconfort.common.Constants;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -19,7 +16,6 @@ import com.rabbitmq.client.Envelope;
 public class HearbeatReceiver {
 
     private boolean isStop;
-    private final AtomicBoolean isAlive;
     private final ConnectionFactory connectionFactory;
     private final Semaphore semaphore;
     
@@ -30,7 +26,6 @@ public class HearbeatReceiver {
         this.connectionFactory.setUsername(properties.getProperty("rabbitmq.server.user", "guest"));
         this.connectionFactory.setPassword(properties.getProperty("rabbitmq.server.password", "guest"));
         this.isStop = false;
-        this.isAlive = new AtomicBoolean(true);
         this.semaphore = new Semaphore(1);
     }
 
@@ -49,10 +44,6 @@ public class HearbeatReceiver {
             }
             channel.basicCancel(tag);
         }
-    }
-
-    public void setToFalse() {
-        isAlive.set(false);
     }
 
     public void waitForHeartbeat() throws InterruptedException {

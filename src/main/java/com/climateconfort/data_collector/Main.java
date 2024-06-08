@@ -69,7 +69,7 @@ public class Main {
         waitThread.start();
     }
 
-    public void start() throws InterruptedException, BrokenBarrierException {
+    public void start() throws InterruptedException {
         long totalMilisecs = 0;
 
         while (!isStop) {
