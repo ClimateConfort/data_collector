@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,7 +95,7 @@ class MainTest {
     }
 
     @Test
-    void testStart() throws IOException, TimeoutException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    void testStart() throws IOException, TimeoutException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InterruptedException, BrokenBarrierException {
         SensorData sensorData = new SensorData(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
         when(csvDataReader.read()).thenReturn(Optional.of(sensorData));
         doAnswer(invocation -> {

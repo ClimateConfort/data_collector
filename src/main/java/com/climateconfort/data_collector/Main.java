@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.cli.CommandLine;
@@ -22,10 +24,12 @@ public class Main {
 
     private static final String PROGRAM_NAME = "data_collector";
     private static final String PROGRAM_VERSION = "1.0.0";
+    private static final int HEARTBEAT_TIME_MIN = 5;
 
     private final CsvDataReader csvDataReader;
     private final DataPublisher dataPublisher;
     private final ActionReceiver actionReceiver;
+    private final HearbeatReceiver hearbeatReceiver;
     private boolean isStop;
 
     public Main(Path datasetPath, Path propertiesPath) throws IOException {
@@ -42,6 +46,7 @@ public class Main {
         this.csvDataReader = new CsvDataReader(properties, parser);
         this.dataPublisher = new DataPublisher(properties);
         this.actionReceiver = new ActionReceiver(properties);
+        this.hearbeatReceiver = new HearbeatReceiver(properties);
         this.isStop = false;
     }
 
@@ -64,8 +69,11 @@ public class Main {
         waitThread.start();
     }
 
-    public void start() {
+    public void start() throws InterruptedException, BrokenBarrierException {
+        long totalMilisecs = 0;
+
         while (!isStop) {
+            long start = System.currentTimeMillis();
             csvDataReader
                     .read()
                     .ifPresentOrElse(sensorData -> {
@@ -75,6 +83,12 @@ public class Main {
                             throw new IllegalStateException(e);
                         }
                     }, () -> log("No data..."));
+            
+            totalMilisecs += System.currentTimeMillis() - start;
+            if (totalMilisecs >= TimeUnit.MINUTES.toMillis(HEARTBEAT_TIME_MIN)) {
+                totalMilisecs = 0;
+                hearbeatReceiver.waitForHeartbeat();
+            }
         }
     }
 
