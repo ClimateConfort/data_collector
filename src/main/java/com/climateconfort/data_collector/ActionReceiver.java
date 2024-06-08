@@ -32,7 +32,7 @@ public class ActionReceiver {
     public void subscribe() throws IOException, TimeoutException, InterruptedException {
         try (Connection connection = connectionFactory.newConnection();
                 Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare(Constants.SENSOR_ACTION_EXCHANGE, "topic");
+            channel.exchangeDeclare(Constants.SENSOR_ACTION_EXCHANGE, "direct");
             String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, Constants.SENSOR_ACTION_EXCHANGE, String.format("%d.%d", buildingId, roomId));
             ActionConsumer consumer = new ActionConsumer(channel);

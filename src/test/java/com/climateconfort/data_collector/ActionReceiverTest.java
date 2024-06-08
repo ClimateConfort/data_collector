@@ -76,7 +76,7 @@ class ActionReceiverTest {
         actionReceiver.stop();
         verify(connectionFactory).newConnection();
         verify(connection).createChannel();
-        verify(channel).exchangeDeclare(Constants.SENSOR_ACTION_EXCHANGE, "topic");
+        verify(channel).exchangeDeclare(Constants.SENSOR_ACTION_EXCHANGE, "direct");
         verify(channel).queueBind(QUEUE_NAME, Constants.SENSOR_ACTION_EXCHANGE,
                 String.format("%d.%d", buildingId, roomId));
     }
