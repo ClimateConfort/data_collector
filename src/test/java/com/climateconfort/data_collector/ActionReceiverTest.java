@@ -1,20 +1,31 @@
 package com.climateconfort.data_collector;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.net.ssl.SSLContext;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockitoAnnotations;
 
 import com.climateconfort.common.Constants;
@@ -48,13 +59,16 @@ class ActionReceiverTest {
 
     @BeforeEach
     void setUp() throws IOException, TimeoutException, NoSuchFieldException, SecurityException,
-            IllegalArgumentException, IllegalAccessException {
+            IllegalArgumentException, IllegalAccessException, UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
         MockitoAnnotations.openMocks(this);
         when(connectionFactory.newConnection()).thenReturn(connection);
+        doNothing().when(connectionFactory).useSslProtocol(any(SSLContext.class));
         when(connection.createChannel()).thenReturn(channel);
         when(channel.queueDeclare()).thenReturn(declareOk);
         when(declareOk.getQueue()).thenReturn(QUEUE_NAME);
-        actionReceiver = new ActionReceiver(getProperties());
+        try (MockedConstruction<TlsManager> mockedConstruction = mockConstruction(TlsManager.class, (mock, context) -> when(mock.getSslContext()).thenReturn(mock(SSLContext.class)))) {
+            actionReceiver = new ActionReceiver(getProperties());
+        }
         setField(actionReceiver, "connectionFactory", connectionFactory);
     }
 

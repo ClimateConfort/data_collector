@@ -1,6 +1,11 @@
 package com.climateconfort.data_collector;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
@@ -22,7 +27,8 @@ public class ActionReceiver {
     private final ConnectionFactory connectionFactory;
     private boolean isStop;
 
-    public ActionReceiver(Properties properties) {
+    public ActionReceiver(Properties properties) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+        TlsManager tlsManager = new TlsManager(properties);
         this.roomId = Integer.parseInt(properties.getProperty("climateconfort.room_id", "NaN"));
         this.buildingId = Integer.parseInt(properties.getProperty("climateconfort.building_id", "NaN"));
         this.connectionFactory = new ConnectionFactory();
@@ -30,6 +36,7 @@ public class ActionReceiver {
         this.connectionFactory.setPort(Integer.parseInt(properties.getProperty("rabbitmq.server.port", "5672")));
         this.connectionFactory.setUsername(properties.getProperty("rabbitmq.server.user", "guest"));
         this.connectionFactory.setPassword(properties.getProperty("rabbitmq.server.password", "guest"));
+        this.connectionFactory.useSslProtocol(tlsManager.getSslContext());
         this.isStop = false;
     }
 
@@ -56,7 +63,7 @@ public class ActionReceiver {
     }
 
     public class ActionConsumer extends DefaultConsumer {
-    
+
         public ActionConsumer(Channel channel) {
             super(channel);
         }
