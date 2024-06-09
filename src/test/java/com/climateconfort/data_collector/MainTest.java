@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;

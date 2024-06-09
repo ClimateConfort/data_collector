@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -24,7 +23,7 @@ public class Main {
 
     private static final String PROGRAM_NAME = "data_collector";
     private static final String PROGRAM_VERSION = "1.0.0";
-    private static final int HEARTBEAT_TIME_MIN = 5;
+    private static final int HEARTBEAT_TIME_MIN = 3;
 
     private final CsvDataReader csvDataReader;
     private final DataPublisher dataPublisher;
@@ -51,9 +50,17 @@ public class Main {
     }
 
     public void setup(Scanner scanner) {
-        Thread subscriberThread = new Thread(() -> {
+        Thread actionSubscriberThread = new Thread(() -> {
             try {
                 actionReceiver.subscribe();
+            } catch (IOException | TimeoutException | InterruptedException e) {
+                log("Subscriber Thread Interrupted -> " + e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        });
+        Thread heartbeatSubscriberThread = new Thread(() -> {
+            try {
+                hearbeatReceiver.subscribe();
             } catch (IOException | TimeoutException | InterruptedException e) {
                 log("Subscriber Thread Interrupted -> " + e.getMessage());
                 Thread.currentThread().interrupt();
@@ -62,16 +69,17 @@ public class Main {
         Thread waitThread = new Thread(() -> {
             scanner.nextLine();
             actionReceiver.stop();
+            hearbeatReceiver.stop();
             isStop = true;
             scanner.close();
         });
-        subscriberThread.start();
+        actionSubscriberThread.start();
+        heartbeatSubscriberThread.start();
         waitThread.start();
     }
 
     public void start() throws InterruptedException {
         long totalMilisecs = 0;
-
         while (!isStop) {
             long start = System.currentTimeMillis();
             csvDataReader

@@ -34,7 +34,7 @@ public class HearbeatReceiver {
                 Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(Constants.HEARTBEAT_EXCHANGE, "fanout");
             String queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, Constants.HEARTBEAT_EXCHANGE, null);
+            channel.queueBind(queueName, Constants.HEARTBEAT_EXCHANGE, "");
             ActionConsumer consumer = new ActionConsumer(channel);
             String tag = channel.basicConsume(queueName, true, consumer);
             synchronized (this) {
@@ -65,7 +65,6 @@ public class HearbeatReceiver {
         public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
                 throws IOException {
             System.out.println("Server's heartbeat reached");
-
             semaphore.release();
         }
     }
