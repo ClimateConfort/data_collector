@@ -1,6 +1,7 @@
 package com.climateconfort.data_collector;
 
 import org.apache.commons.cli.CommandLine;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +43,9 @@ class MainTest {
 
     @Mock
     private ActionReceiver actionReceiver;
+
+    @Mock
+    private HearbeatReceiver hearbeatReceiver;
 
     private Main main;
 
@@ -69,6 +74,7 @@ class MainTest {
         setField(main, "csvDataReader", csvDataReader);
         setField(main, "dataPublisher", dataPublisher);
         setField(main, "actionReceiver", actionReceiver);
+        setField(main, "heartbeatReceiver", hearbeatReceiver);
     }
 
     @Test
@@ -82,7 +88,9 @@ class MainTest {
     void testSetupCorrect() {
         Scanner scanner = mock(Scanner.class);
         main.setup(scanner);
-        verify(actionReceiver, times(0)).stop();
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> verify(actionReceiver).subscribe());
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> verify(hearbeatReceiver).subscribe());
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> verify(scanner).nextLine());
     }
 
     @Test
@@ -94,7 +102,7 @@ class MainTest {
     }
 
     @Test
-    void testStart() throws IOException, TimeoutException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    void testStart() throws IOException, TimeoutException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InterruptedException {
         SensorData sensorData = new SensorData(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
         when(csvDataReader.read()).thenReturn(Optional.of(sensorData));
         doAnswer(invocation -> {
@@ -150,7 +158,7 @@ class MainTest {
     }
 
     private <T> Field setFieldPublic(Class<T> target, String fieldName)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException {
         Field field = target.getDeclaredField(fieldName);
         field.setAccessible(true);
         return field;

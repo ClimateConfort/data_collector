@@ -6,11 +6,13 @@ import java.util.Properties;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.climateconfort.common.SensorData;
 
 public class CsvDataReader implements DataReader {
-
+    private static final Logger LOGGER = LogManager.getLogger(CsvDataReader.class);
     private final long buildingId;
     private final long roomId;
     private final Iterator<CSVRecord> recordIterator;
@@ -39,8 +41,8 @@ public class CsvDataReader implements DataReader {
         try {
             Thread.sleep(readInterval);
         } catch (InterruptedException e) {
+            LOGGER.error("Not valid interval number", e);
             Thread.currentThread().interrupt();
-            throw new IllegalStateException(e);
         }
         return Optional.of(new SensorData(unixTime, buildingId, roomId, -1, temperature, lightLvl, airQuality, soundLvl,
                 humidity, pressure));
