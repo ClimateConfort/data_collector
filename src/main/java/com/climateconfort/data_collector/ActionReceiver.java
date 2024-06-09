@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.climateconfort.common.Constants;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -13,6 +16,7 @@ import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
 public class ActionReceiver {
+    private static final Logger LOGGER = LogManager.getLogger(ActionReceiver.class);
     private final long roomId;
     private final long buildingId;
     private final ConnectionFactory connectionFactory;
@@ -60,7 +64,8 @@ public class ActionReceiver {
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
                 throws IOException {
-            System.out.println("The action should be: " + new String(body));
+            String actionMessage = new String(body);
+            LOGGER.info("The action should be: {}", actionMessage);
         }
     }
 }

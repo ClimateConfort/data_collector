@@ -5,6 +5,9 @@ import java.util.Properties;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.climateconfort.common.Constants;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
@@ -14,7 +17,7 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 public class HearbeatReceiver {
-
+    private static final Logger LOGGER = LogManager.getLogger(HearbeatReceiver.class);
     private boolean isStop;
     private final ConnectionFactory connectionFactory;
     private final Semaphore semaphore;
@@ -35,7 +38,7 @@ public class HearbeatReceiver {
             channel.exchangeDeclare(Constants.HEARTBEAT_EXCHANGE, "fanout");
             String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, Constants.HEARTBEAT_EXCHANGE, "");
-            ActionConsumer consumer = new ActionConsumer(channel);
+            HeartbeatConsumer consumer = new HeartbeatConsumer(channel);
             String tag = channel.basicConsume(queueName, true, consumer);
             synchronized (this) {
                 while (!isStop) {
@@ -47,7 +50,9 @@ public class HearbeatReceiver {
     }
 
     public void waitForHeartbeat() throws InterruptedException {
+        LOGGER.info("Waiting for heartbeat...");
         semaphore.acquire();
+        LOGGER.info("Waiting for heartbeat... - done");
     }
 
     public synchronized void stop() {
@@ -55,16 +60,16 @@ public class HearbeatReceiver {
         this.notifyAll();
     }
 
-    class ActionConsumer extends DefaultConsumer {
+    class HeartbeatConsumer extends DefaultConsumer {
     
-        public ActionConsumer(Channel channel) {
+        public HeartbeatConsumer(Channel channel) {
             super(channel);
         }
 
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
                 throws IOException {
-            System.out.println("Server's heartbeat reached");
+            LOGGER.info("Server's heartbeat reached");
             semaphore.release();
         }
     }
