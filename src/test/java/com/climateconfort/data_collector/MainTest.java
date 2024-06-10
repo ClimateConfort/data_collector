@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.MockitoAnnotations;
 
 import com.climateconfort.common.SensorData;
@@ -17,11 +18,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.net.ssl.SSLContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +61,7 @@ class MainTest {
     private Path propertiesPath;
 
     @BeforeEach
-    void setUp() throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    void setUp() throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
         MockitoAnnotations.openMocks(this);
 
         // Create temporary test properties file
@@ -70,7 +78,9 @@ class MainTest {
             writer.write("100,448,203.16,311.05,686.11,798.65,575.02\n");
         }
 
-        main = new Main(datasetPath, propertiesPath);
+        try (MockedConstruction<TlsManager> mockedConstruction = mockConstruction(TlsManager.class, (mock, context) -> when(mock.getSslContext()).thenReturn(mock(SSLContext.class)))) {
+            main = new Main(datasetPath, propertiesPath);
+        }
         setField(main, "csvDataReader", csvDataReader);
         setField(main, "dataPublisher", dataPublisher);
         setField(main, "actionReceiver", actionReceiver);

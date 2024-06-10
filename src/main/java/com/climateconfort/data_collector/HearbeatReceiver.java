@@ -1,6 +1,11 @@
 package com.climateconfort.data_collector;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeoutException;
@@ -21,13 +26,15 @@ public class HearbeatReceiver {
     private boolean isStop;
     private final ConnectionFactory connectionFactory;
     private final Semaphore semaphore;
-    
-    public HearbeatReceiver(Properties properties) {
+
+    public HearbeatReceiver(Properties properties) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+        TlsManager tlsManager = new TlsManager(properties);
         this.connectionFactory = new ConnectionFactory();
         this.connectionFactory.setHost(properties.getProperty("rabbitmq.server.ip", "localhost"));
         this.connectionFactory.setPort(Integer.parseInt(properties.getProperty("rabbitmq.server.port", "5672")));
         this.connectionFactory.setUsername(properties.getProperty("rabbitmq.server.user", "guest"));
         this.connectionFactory.setPassword(properties.getProperty("rabbitmq.server.password", "guest"));
+        this.connectionFactory.useSslProtocol(tlsManager.getSslContext());
         this.isStop = false;
         this.semaphore = new Semaphore(1);
     }
@@ -61,7 +68,7 @@ public class HearbeatReceiver {
     }
 
     class HeartbeatConsumer extends DefaultConsumer {
-    
+
         public HeartbeatConsumer(Channel channel) {
             super(channel);
         }
@@ -70,7 +77,9 @@ public class HearbeatReceiver {
         public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
                 throws IOException {
             LOGGER.info("Server's heartbeat reached");
-            semaphore.release();
+            if (semaphore.availablePermits() < 1) {
+                semaphore.release();
+            }
         }
     }
 

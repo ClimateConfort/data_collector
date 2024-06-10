@@ -3,6 +3,11 @@ package com.climateconfort.data_collector;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
@@ -18,7 +23,8 @@ public class DataPublisher {
     private final long buildingId;
     private final ConnectionFactory connectionFactory;
 
-    public DataPublisher(Properties properties) throws NumberFormatException {
+    public DataPublisher(Properties properties) throws NumberFormatException, UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+        TlsManager tlsManager = new TlsManager(properties);
         this.connectionFactory = new ConnectionFactory();
         this.connectionFactory.setHost(properties.getProperty("rabbitmq.server.ip", "localhost"));
         this.connectionFactory.setPort(Integer.parseInt(properties.getProperty("rabbitmq.server.port", "5672")));
@@ -26,6 +32,8 @@ public class DataPublisher {
         this.connectionFactory.setPassword(properties.getProperty("rabbitmq.server.password", "guest"));
         this.roomId = Integer.parseInt(properties.getProperty("climateconfort.room_id", "NaN"));
         this.buildingId = Integer.parseInt(properties.getProperty("climateconfort.building_id", "NaN"));
+        this.connectionFactory.useSslProtocol(tlsManager.getSslContext());
+
     }
 
     public void publish(SensorData sensorData) throws IOException, TimeoutException {

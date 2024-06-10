@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -98,7 +103,7 @@ public class Main {
 
     private boolean isStop;
 
-    public Main(Path datasetPath, Path propertiesPath) throws IOException {
+    public Main(Path datasetPath, Path propertiesPath) throws IOException, NumberFormatException, UnrecoverableKeyException, KeyManagementException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
         properties = new Properties();
         try (BufferedReader bufferedReader = Files.newBufferedReader(propertiesPath)) {
             properties.load(bufferedReader);
