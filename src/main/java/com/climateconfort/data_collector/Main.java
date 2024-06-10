@@ -31,7 +31,7 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private static final String PROGRAM_NAME = "data_collector";
     private static final String PROGRAM_VERSION = "1.0.0";
-    private static final int HEARTBEAT_TIME_MIN = 3;
+    private static final int HEARTBEAT_TIME_MIN = 5;
 
     public static void main(String[] args) {
 
