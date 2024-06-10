@@ -77,9 +77,7 @@ public class HearbeatReceiver {
         public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
                 throws IOException {
             LOGGER.info("Server's heartbeat reached");
-            if (semaphore.availablePermits() < 1) {
-                semaphore.release();
-            }
+            semaphore.release();
         }
     }
 
